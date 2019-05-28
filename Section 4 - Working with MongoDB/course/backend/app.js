@@ -47,7 +47,15 @@ app.get('/api/posts', (req, res, next) => {
         { id: '12345dsdsds9', title: 'second server side post', content: 'This is the content from the serveer' },
     ]
 
-    res.json(posts);
+    Post.find().then(documents =>{
+        res.status(200).json({
+            message: "Posts fetched successfully",
+            posts: documents
+        })
+        // res.json(documents);
+    });
+
+    // res.json(posts);
 
 });
 
