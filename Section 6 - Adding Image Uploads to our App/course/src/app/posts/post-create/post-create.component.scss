@@ -10,3 +10,14 @@ mat-spinner {
 input[type=file]{
    display: none;
 }
+
+.image-preview {
+    height: 5rem;
+    margin:1rem 0;
+    display: inline-block;
+}
+
+image-preview img {
+    height: 100%;
+    width: 17%;
+}
