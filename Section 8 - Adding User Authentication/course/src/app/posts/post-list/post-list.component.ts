@@ -4,6 +4,7 @@ import { Post } from '../post.model'
 import { PostsService } from '../posts.service';
 import { Subscription } from 'rxjs';
 import { PageEvent } from '@angular/material';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -15,6 +16,9 @@ export class PostListComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
   private postsSub: Subscription
 
+  private authListenerSubs: Subscription
+  userIsAuthenticated = false;
+
   isLoading = false;
 
   totalPosts = 0;
@@ -22,21 +26,28 @@ export class PostListComponent implements OnInit, OnDestroy {
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
 
-  constructor(public postsService: PostsService) { }
+  constructor(public postsService: PostsService, private authService: AuthService) { }
 
   ngOnInit() {
     this.isLoading = true;
     this.postsService.getPosts(this.postsPerPage, this.currentPage)
     this.postsSub = this.postsService.getPostUpdateListener()
-      .subscribe((postData: {posts:Post[], postCount:number}) => {
+      .subscribe((postData: { posts: Post[], postCount: number }) => {
         this.posts = postData.posts;
         this.totalPosts = postData.postCount
         this.isLoading = false;
       })
+      //the below is needed so that when a user logs in they cant then have access
+    this.userIsAuthenticated = this.authService.getIsAuth();
+
+    this.authListenerSubs = this.authService.getAuthStatusListener().subscribe(isAuthenticated => {
+      this.userIsAuthenticated = isAuthenticated;
+    })
   }
 
   ngOnDestroy(): void {
     this.postsSub.unsubscribe();
+    this.authListenerSubs.unsubscribe();
   }
 
   onDelete(postID: string) {
