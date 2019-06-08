@@ -65,7 +65,10 @@ router.post("/login", (req, res, next) => {
             expiresIn: "3600",
             message: "Logged in",
             token: token,
+            userId: fetchedUser._id,
         });
+        // We get the userId in the token however it would impact performance
+        // if we would have to decode the token on the client side
 
     }).catch(err => {
         console.log(err);
